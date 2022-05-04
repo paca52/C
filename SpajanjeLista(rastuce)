@@ -1,0 +1,113 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct{
+    int broj;
+    struct ele *sledeci;
+}ele;
+
+ele *dodaj(ele *glava, int a)
+{
+    ele *novi;
+    novi = (ele*)malloc(sizeof(ele));
+    novi->broj = a;
+    novi->sledeci = NULL;
+    if(glava == NULL)
+        glava = novi;
+    else{
+        ele *tek = glava;
+        while(tek->sledeci != NULL)
+            tek = tek->sledeci;
+        tek->sledeci = novi;
+    }
+    return glava;
+}
+
+void ispis(ele *glava)
+{
+    printf("lista: [ ");
+    while(glava!=NULL){
+        printf("%d ",glava->broj);
+        glava = glava->sledeci;
+    }
+    printf("]\n");
+}
+
+ele *spoj(ele *glava, ele *glava1, ele *glava2)
+{
+
+    ele *tek1 = glava1, *tek2 = glava2, *novi, *tek;
+
+    if(tek1->broj < tek2->broj){
+        glava = dodaj(glava, tek1->broj);
+        tek1 = tek1->sledeci;
+    }
+    else{
+        glava = dodaj(glava, tek2->broj);
+        tek2 = tek2->sledeci;
+    }
+    tek = glava;
+
+    while(tek1 != NULL && tek2 != NULL){
+
+        if(tek1->broj < tek2->broj){
+            if(tek->broj != tek1->broj){
+                glava = dodaj(glava, tek1->broj);
+                tek = tek->sledeci;
+            }
+            tek1 = tek1->sledeci;
+        }
+        else{
+            if(tek->broj != tek2->broj){
+                glava = dodaj(glava, tek2->broj);
+                tek = tek->sledeci;
+            }
+            tek2 = tek2->sledeci;
+        }
+    }
+    while(tek1 != NULL){
+        if(tek->broj != tek1->broj){
+            glava = dodaj(glava, tek1->broj);
+            tek = tek->sledeci;
+        }
+        tek1 = tek1->sledeci;
+    }
+
+    while(tek2 != NULL){
+        if(tek->broj != tek2->broj){
+            glava = dodaj(glava, tek2->broj);
+            tek = tek->sledeci;
+        }
+        tek2 = tek2->sledeci;
+    }
+
+    return glava;
+}
+
+int main()
+{
+    ele *glava1, *glava2, *glava, *novi;
+    glava1 = glava2 = glava = NULL;
+
+    int n, a;
+    scanf("%d", &n);
+    for(int i=0; i<n; i++){
+        scanf("%d", &a);
+        glava1 = dodaj(glava1, a);
+    }
+    printf("1:\n");
+    ispis(glava1);
+
+    scanf("%d", &n);
+    for(int i=0; i<n; i++){
+        scanf("%d", &a);
+        glava2 = dodaj(glava2, a);
+    }
+    printf("2:\n");
+    ispis(glava2);
+
+    glava = spoj(glava, glava1, glava2);
+    printf("3:\n");
+    ispis(glava);
+    return 0;
+}
