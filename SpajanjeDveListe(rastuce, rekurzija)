@@ -1,0 +1,108 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct ele{
+    int broj;
+    struct ele *sledeci;
+}ele;
+
+ele *dodaj(ele *glava, int a)
+{
+    ele *novi;
+    novi = (ele*)malloc(sizeof(ele));
+    novi->broj = a;
+    novi->sledeci = NULL;
+    if(glava == NULL)
+        glava = novi;
+    else{
+        ele *tek = glava;
+        while(tek->sledeci != NULL)
+            tek = tek->sledeci;
+        tek->sledeci = novi;
+    }
+    return glava;
+}
+
+int postoji(ele *glava, int x){
+    if(glava == NULL)
+        return 0;
+    for(ele *tek = glava; tek != NULL; tek = tek->sledeci)
+        if(tek->broj == x)
+            return 1;
+    return 0;
+}
+
+void ispis(ele *glava)
+{
+    printf("lista: [ ");
+    while(glava!=NULL){
+        printf("%d ",glava->broj);
+        glava = glava->sledeci;
+    }
+    printf("]\n");
+}
+
+ele *spoj_rekurzija(ele *glava, ele *glava1, ele *glava2){
+    if(glava1 == NULL && glava2 == NULL)
+        return glava;
+
+    if(glava1 != NULL && glava2 == NULL){
+        if(!postoji(glava, glava1->broj))
+            glava = dodaj(glava, glava1->broj);
+
+        glava1 = glava1->sledeci;
+        return spoj_rekurzija(glava, glava1, glava2);
+    }
+
+    else if(glava1 == NULL && glava2 != NULL){
+        if(!postoji(glava, glava2->broj))
+            glava = dodaj(glava, glava2->broj);
+
+        glava2 = glava2->sledeci;
+        return spoj_rekurzija(glava, glava1, glava2);
+    }
+    
+    else if(glava1->broj < glava2->broj){
+        if(!postoji(glava, glava1->broj))
+            glava = dodaj(glava, glava1->broj);
+
+        glava1 = glava1->sledeci;
+        return spoj_rekurzija(glava, glava1, glava2);
+    }
+
+    else{
+        if(!postoji(glava, glava2->broj))
+            glava = dodaj(glava, glava2->broj);
+
+        glava2 = glava2->sledeci;
+        return spoj_rekurzija(glava, glava1, glava2);
+    }
+}
+
+
+int main(){
+    ele *glava1, *glava2, *glava, *novi;
+    glava1 = glava2 = glava = NULL;
+
+    int n, a;
+    scanf("%d", &n);
+    for(int i=0; i<n; i++){
+        scanf("%d", &a);
+        glava1 = dodaj(glava1, a);
+    }
+    printf("1:\n");
+    ispis(glava1);
+
+    scanf("%d", &n);
+    for(int i=0; i<n; i++){
+        scanf("%d", &a);
+        glava2 = dodaj(glava2, a);
+    }
+    printf("2:\n");
+    ispis(glava2);
+
+    glava = spoj_rekurzija(glava, glava1, glava2);
+    printf("3:\n");
+    ispis(glava);
+    return 0;
+}
