@@ -1,0 +1,109 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+/*napisati f-ju kojom se data jenostruko povezana lista celih 
+brojeva tansformise tako da su nenegativni brojevi(>=0) na pocetku, 
+a negativni na kraju. Poredak se ne menja
+pr:
+    unos:
+        5
+        3 -2 0 4 -1
+    
+    izlaz:
+        3 0 4 -2 -1
+*/
+
+typedef struct ele{
+    int znak;
+    struct ele* sledeci;
+}ele;
+
+void ured(ele **poc, ele **kraj, int c)
+{
+    ele *novi = (ele*)malloc(sizeof(ele));
+    novi->sledeci = NULL;
+    novi->znak = c;
+
+    if(*poc == NULL)
+        *poc = novi;
+    else
+        (*kraj)->sledeci = novi;
+    *kraj = novi;
+}
+
+void izreda(ele **poc, int *c)
+{
+    if(*poc == NULL){
+        printf("\nPRAZNO SINE\n"); return;
+    }
+    if((*poc)->sledeci == NULL){
+        *c = (*poc)->znak;
+        *poc = NULL;
+        free(*poc);
+    }
+    else{
+        ele *tmp = *poc;
+        *c = (*poc)->znak;
+        *poc = (*poc)->sledeci;
+        free(tmp);
+    }
+}
+
+ele *dodaj(ele *glava, int a)
+{
+    ele *novi = (ele*)malloc(sizeof(ele));
+    novi->sledeci = NULL;
+    novi->znak = a;
+    if(glava == NULL){
+        glava = novi;
+    }
+    else{
+        ele *tek = glava;
+        while(tek->sledeci != NULL) tek = tek->sledeci;
+        tek->sledeci = novi;
+    }
+    return glava;
+}
+
+void ispis(ele *glava)
+{
+    while(glava != NULL)
+    {
+        printf("%d ", glava->znak);
+        glava = glava->sledeci;
+    }
+}
+
+int main()
+{
+    ele *poc1, *kraj1;//neneg tj >=0
+    ele *poc2, *kraj2;//neg tj < 0
+    ele *glava = NULL;
+    poc1 = kraj1 = NULL;
+    poc2 = kraj2 = NULL;
+
+    int n, a;
+    scanf("%d", &n);
+    for(int i=0; i<n; i++){
+        scanf("%d", &a);
+        if(a >= 0)
+            ured(&poc1, &kraj1, a);
+        else
+            ured(&poc2, &kraj2, a);
+    }
+
+    //!!!moguce je bilo povezati kraj1 sa poc1 i onda proci samo kroz jedan while!
+    int pom;
+    while(poc1 != NULL){
+        izreda(&poc1, &pom);
+        glava = dodaj(glava, pom);
+    }
+
+    while(poc2 != NULL){
+        izreda(&poc2, &pom);
+        glava = dodaj(glava, pom);
+    }
+
+    ispis(glava);
+    return 0;
+}
