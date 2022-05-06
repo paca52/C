@@ -1,0 +1,75 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+
+//4 3 + 4 3 - * => (4-3)(4+3) = 1 * 7 = 7
+//5 5 + 6 - => 5 + 5 - 6 = 4
+
+typedef struct ele{
+    int broj;
+    struct ele *sledeci;
+}ele;
+
+ele *push(ele *stack, int a){
+    ele *novi = (ele*)malloc(sizeof(ele));
+    novi->sledeci = stack;
+    novi->broj = a;
+    stack = novi;
+    return stack;
+}
+
+ele *pop(ele *stack, int *x){
+    ele *novi = stack;
+    stack = stack->sledeci;
+    *x = novi->broj;
+    free(novi);
+    return stack;
+}
+
+void ispis(ele *stack){
+    printf("stack: ");
+    for(ele *tek = stack; tek!=NULL; tek = tek->sledeci)
+        printf("%d ", tek->broj);
+    printf("\n\n");
+}
+
+int main(){
+
+    ele *stack = NULL;
+    char izraz[100];
+
+    //!!!FGETS DODAJE \n NA KRAJ STRINGA!!!//
+    fgets(izraz, 100, stdin);
+    
+    int i = 0, a, vred, b;
+    while(izraz[i] != '\0' && izraz[i] != '\n'){
+        if(isdigit(izraz[i])){
+            a = izraz[i] - '0';
+            stack = push(stack, a);
+        }
+        else if(izraz[i] != ' '){
+            //printf("bruh\n");
+            stack = pop(stack, &a);
+            stack = pop(stack, &b);
+            switch (izraz[i]){
+                case '+':
+                    stack = push(stack, b + a);
+                    break;
+                case '-':
+                    stack = push(stack, b - a);
+                    break;
+                case '*':
+                    stack = push(stack, b * a);
+                    break;
+                case '/':
+                    stack = push(stack, b / a);
+                    break;
+            }
+        }
+        i++;
+    }
+    stack = pop(stack, &vred);
+    printf("vrednost izraza: %d", vred);
+    return 0;
+}
