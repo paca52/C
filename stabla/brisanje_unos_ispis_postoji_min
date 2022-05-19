@@ -1,0 +1,142 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct cvor{
+    int broj;
+    struct cvor *levo;
+    struct cvor *desno;
+}cvor;
+
+cvor *napravi_cvor(int broj){
+    cvor *novi = (cvor*)malloc(sizeof(cvor));
+    if(novi == NULL) return NULL;
+
+    novi->broj = broj;
+    novi->levo = NULL;
+    novi->desno = NULL;
+
+    return novi;
+}
+
+void dodaj_u_stablo(cvor **koren, int broj){
+    if(*koren == NULL){
+        cvor *novi = napravi_cvor(broj);
+        *koren = novi;
+        return;
+    }
+    if(broj < (*koren)->broj)
+        dodaj_u_stablo(&(*koren)->levo, broj);
+    else
+        dodaj_u_stablo(&(*koren)->desno, broj);
+}
+
+/*
+//vraca da li postoji
+int pretrazi(cvor *koren, int broj){
+    if(koren == NULL)
+        return 0;
+    if(koren->broj == broj)
+        return 1;
+    if(koren->broj < broj)
+        return pretrazi(koren->levo, broj);
+    else
+        return pretrazi(koren->desno, broj);
+}*/
+
+//vraca pokazivac na cvor
+cvor *pretrazi(cvor *koren, int broj){
+    if(koren == NULL)
+        return NULL;
+    if(koren->broj == broj)
+        return koren;
+    if(koren->broj < broj)
+        return pretrazi(koren->desno, broj);
+    else
+        return pretrazi(koren->levo, broj);
+}
+
+void ispis_lkd(cvor *koren){
+    if(koren != NULL){
+        ispis_lkd(koren->levo);
+        printf("%d ", koren->broj);
+        ispis_lkd(koren->desno);
+    }
+}
+
+cvor *min(cvor *koren){
+    if(koren == NULL) return NULL;
+    if(koren->levo == NULL)
+        return koren;
+    return min(koren->levo);
+}
+
+void brisi(cvor **koren,int broj)
+{
+    cvor *tmp=NULL;
+    if(*koren==NULL)
+        return;
+    if(broj<(*koren)->broj)
+    {
+        brisi(&(*koren)->levo,broj);
+        return;
+    }
+    if((*koren)->broj<broj)
+    {
+        brisi(&(*koren)->desno,broj);
+        return;
+    }
+    if((*koren)->levo==NULL && (*koren)->desno==NULL)
+    {
+        free(*koren);
+        *koren=NULL;
+        return;
+    }
+    if((*koren)->levo!=NULL && (*koren)->desno==NULL)
+    {
+        tmp=(*koren)->levo;
+        free(*koren);
+        *koren=tmp;
+        return;
+    }
+    if((*koren)->levo==NULL && (*koren)->desno!=NULL)
+    {
+        tmp=(*koren)->desno;
+        free(*koren);
+        *koren=tmp;
+        return;
+    }
+    tmp=min((*koren)->desno);
+    (*koren)->broj=tmp->broj;
+    tmp->broj=broj;
+    brisi(&(*koren)->desno,broj);
+}
+
+int main()
+{
+    cvor *koren = NULL, *tek = NULL;
+    int n, a;
+
+    scanf("%d", &n);
+    for(int i=0; i<n; i++){
+        scanf("%d", &a);
+        dodaj_u_stablo(&koren, a);
+    }
+    ispis_lkd(koren);
+
+    //printf("\nbroj za pretragu: ");
+    //scanf("%d", pret);
+    //tek = pretrazi(koren, pret);
+    //if(tek == NULL)
+    //    printf("nema buraz");
+    //else
+    //    printf("nadje ga");
+    tek = min(koren);
+    if(tek != NULL)
+        printf("tek: %d\n", tek->broj);
+    else
+        printf("bruh\n");
+
+    brisi(&koren, 1);
+    ispis_lkd(koren);
+    return 0;
+}
