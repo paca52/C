@@ -1,0 +1,129 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct tree
+{
+    int broj;
+    struct tree* levo;
+    struct tree* desno;
+}tree;
+
+void dodaj(tree **koren, int broj){
+    if(*koren == NULL){
+        tree *novi = (tree*)malloc(sizeof(tree));
+        novi->broj = broj;
+        novi->desno = NULL;
+        novi->levo = NULL;
+        *koren = novi;
+    }
+    else if((*koren)->broj > broj)
+       dodaj(&(*koren)->levo, broj); 
+    else
+        dodaj(&(*koren)->desno, broj);
+}
+
+void ispis_LKD(tree *koren){
+    if(koren != NULL){
+        ispis_LKD(koren->levo);
+        printf("%d ", koren->broj);
+        ispis_LKD(koren->desno);
+    }
+}
+
+int min(tree *koren){
+    if(koren->levo == NULL)
+        return koren->broj;
+    return min(koren->levo);
+}
+
+int max(int a, int b){
+    if(a > b)
+        return a;
+    return b;
+}
+
+int postoji(tree *koren, int a){
+    if(koren == NULL)
+        return 0;
+    if(koren->broj == a)
+        return 1;
+    if(koren->broj < a)
+        return postoji(koren->desno, a);
+    else
+        return postoji(koren->levo, a);
+}
+
+int maxDepth(tree * root)
+{
+  // Root being null means tree doesn't exist.
+  if (root == NULL)
+    return 0;
+  
+  // Get the depth of the left and right subtree 
+  // using recursion.
+  int leftDepth = maxDepth(root->levo);
+  int rightDepth = maxDepth(root->desno);
+
+  // Choose the larger one and add the root to it.
+  if (leftDepth > rightDepth)
+    return leftDepth + 1;
+  else
+    return rightDepth + 1;
+}
+
+int br_desno(tree *koren){
+    int br = 0;
+    if(koren != NULL)
+        while(koren->desno != NULL){
+            br++;
+            koren = koren->desno;
+        }
+    return br;
+}
+
+int brojListova(tree *koren){
+    if(koren == NULL)
+        return 0;
+    if(koren->desno == NULL && koren->levo == NULL)
+        return 1;
+    else
+        return brojListova(koren->levo) + brojListova(koren->desno);
+}
+
+void zbirGrana(tree *koren, int a[], int *i, int sum){
+
+    if(koren == NULL) return;
+
+    if(koren->levo == NULL && koren->desno == NULL){
+        a[*i] = sum + koren->broj;
+        *i += 1;
+        return;
+    }
+
+    sum += koren->broj;
+    zbirGrana(koren->levo, a, i, sum);
+    zbirGrana(koren->desno, a, i, sum);
+
+}
+
+int main(){
+    tree *koren = NULL;
+
+    int n, a;
+    scanf("%d", &n);
+    for(int i=0; i<n; i++){
+        scanf("%d", &a);
+        dodaj(&koren, a);
+    }
+    
+    n = brojListova(koren);
+    int niz[n];
+
+    int br = 0;
+    zbirGrana(koren, niz, &br, 0);
+
+    for (int i = 0; i < n; i++)
+        printf("%d ", niz[i]);
+    
+    return 0;
+}
