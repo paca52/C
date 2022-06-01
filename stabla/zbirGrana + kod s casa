@@ -133,15 +133,43 @@ void nizz(tree *koren, int b[], int *i){
     }    
 }
 
+int nizzz(tree *koren, int h){
+    if(koren == NULL) return 0;
+    if(h == 0)
+        return koren->broj;
+    else
+        return max(nizzz(koren->levo, h-1), nizzz(koren->desno, h-1));
+}
+
+void stablo_u_niz(tree *koren, int a[], int *i){
+    if(koren == NULL) return;
+    stablo_u_niz(koren->levo, a, i);
+    a[*i] = koren->broj;
+    *i += 1;
+    stablo_u_niz(koren->desno, a, i);
+}
+
 int main(){
     tree *koren = NULL;
 
-    int n, a;
+    int n, a, sr = 0;
     scanf("%d", &n);
     for(int i=0; i<n; i++){
         scanf("%d", &a);
+        sr += a;
         dodaj(&koren, a);
     }
+    
+    sr /= n;
+    int max = koren->broj, tmp;
+    
+    printf("sortirani niz: ");
+    int bruh_niz[n];
+    int j = 0;
+    stablo_u_niz(koren, bruh_niz, &j);
+    for(int i=0; i<n; i++)
+        printf("%d ", bruh_niz[i]);
+    printf("\n");
     
     n = brojListova(koren);
     int niz[n];
@@ -160,6 +188,16 @@ int main(){
     nizz(koren, b, &br);
     for (int i = 0; i < m; i++)
         printf("%d ", b[i]);
+    printf("\n");
+    
+    int h = maxDepth(koren);
+    int c[h];
+    for (int i = 0; i < h; i++)
+        c[i] = nizzz(koren, i);
+    
+    printf("c: \n");
+    for (int i = 0; i < h; i++)
+        printf("%d ", c[i]);
     
     return 0;
 }
