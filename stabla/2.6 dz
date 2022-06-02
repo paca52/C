@@ -122,16 +122,19 @@ int main(){
     tree *koren = NULL;
 
     int n, j;
-    char c[11];
+    char c[25];
     scanf("%d", &n);
     for(int i=0; i<n; i++){
-        scanf("%11s", &c);
+        scanf("%s", &c);
         j = 0;
         while(c[j] != '\n' && c[j] != '\0'){
             if(isupper(c[j]) != 0)
                 c[j] = tolower(c[j]);
             j++;
         }
+        if(j <= 10)
+            c[j] = '\0';
+        else c[10] = '\0';
         dodaj(&koren, c);
     }
 
