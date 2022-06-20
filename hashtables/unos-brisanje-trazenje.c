@@ -101,6 +101,12 @@ int main(){
     char ime[30];
 
     FILE *unos = fopen("unos.txt", "r");
+
+    if(unos == NULL){
+        printf("file nije otvoren.\n");
+        return 0;
+    }
+
     while(fscanf(unos, "%s", &ime) != EOF){
         //printf("bruh\nime = %s\n", ime);
         insert(hashtable, ime);
@@ -108,6 +114,8 @@ int main(){
     fclose(unos);
 
     print(hashtable);
+
+    ime[0] = 0;
 
     printf("unesi ime: ");
     scanf("%s", &ime);
